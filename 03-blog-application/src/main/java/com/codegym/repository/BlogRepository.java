@@ -13,4 +13,6 @@ import java.util.List;
 public interface BlogRepository extends PagingAndSortingRepository<Blog, Long> {
     @Query("select b from Blog b order by b.date asc ")
     Page<Blog> findAllOrOrderByDate(Pageable pageable);
+
+    Page<Blog> findAllByTitleContaining(String title, Pageable pageable);
 }

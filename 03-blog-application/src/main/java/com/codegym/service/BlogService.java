@@ -10,4 +10,6 @@ import java.util.List;
 public interface BlogService extends GeneralService<Blog> {
     Page<Blog> findAll(Pageable pageable);
     Page<Blog> findAllOrOrderByDate(Pageable pageable);
+
+    Page<Blog> findAllByTitleContaining(String title, Pageable pageable);
 }

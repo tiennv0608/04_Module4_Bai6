@@ -11,10 +11,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.util.List;
@@ -55,6 +52,19 @@ public class BlogController {
         Page<Blog> blogList = blogService.findAllOrOrderByDate(pageable);
         ModelAndView modelAndView = new ModelAndView("/blog/list");
         modelAndView.addObject("blogs",blogList);
+        return modelAndView;
+    }
+
+    @PostMapping("/search-title")
+    public ModelAndView listBlogs(@RequestParam("title") Optional<String> title, Pageable pageable){
+        Page<Blog> blogs;
+        if(title.isPresent()){
+            blogs = blogService.findAllByTitleContaining(title.get(), pageable);
+        } else {
+            blogs = blogService.findAll(pageable);
+        }
+        ModelAndView modelAndView = new ModelAndView("/blog/list");
+        modelAndView.addObject("blogs", blogs);
         return modelAndView;
     }
 

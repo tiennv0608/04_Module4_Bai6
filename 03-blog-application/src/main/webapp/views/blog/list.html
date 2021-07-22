@@ -5,8 +5,13 @@
     <title>Blog list</title>
 </head>
 <body>
-<h1>List Blogs</h1>
 <a href="/create-blog">Create new blog</a>
+<h1>List Blogs</h1>
+<form action="/search-title" method="post">
+    Search title:
+    <input type="text" name="title">
+    <input type="submit" value="Search Title">
+</form>
 <br>
 <table border="1px solid black">
     <tr>
