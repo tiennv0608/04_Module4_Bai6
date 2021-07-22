@@ -12,7 +12,13 @@
     <input type="text" name="title">
     <input type="submit" value="Search Title">
 </form>
-<br>
+<form action="/view-category" method="post">
+    Category:
+    <select name="category">
+        <option th:each="c : ${categories}" th:value="${c.id}" th:text="${c.name}"></option>
+    </select>
+    <input type="submit" value="Search category">
+</form>
 <table border="1px solid black">
     <tr>
         <th>Title</th>

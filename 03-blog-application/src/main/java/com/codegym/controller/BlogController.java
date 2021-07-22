@@ -27,7 +27,7 @@ public class BlogController {
     private CategoryService categoryService;
 
     @ModelAttribute("categories")
-    public Iterable<Category> categories(){
+    public Iterable<Category> categories() {
         return categoryService.findAll();
     }
 
@@ -40,25 +40,25 @@ public class BlogController {
 //    }
 
     @GetMapping("/home")
-    public ModelAndView showList(@PageableDefault(value = 5) Pageable pageable){
+    public ModelAndView showList(@PageableDefault(value = 5) Pageable pageable) {
         Page<Blog> blogList = blogService.findAll(pageable);
         ModelAndView modelAndView = new ModelAndView("/blog/list");
-        modelAndView.addObject("blogs",blogList);
+        modelAndView.addObject("blogs", blogList);
         return modelAndView;
     }
 
     @GetMapping("/sort")
-    public ModelAndView sortByDate(@PageableDefault(size = 5, sort = "date", direction = Sort.Direction.ASC) Pageable pageable){
+    public ModelAndView sortByDate(@PageableDefault(size = 5, sort = "date", direction = Sort.Direction.ASC) Pageable pageable) {
         Page<Blog> blogList = blogService.findAllOrOrderByDate(pageable);
         ModelAndView modelAndView = new ModelAndView("/blog/list");
-        modelAndView.addObject("blogs",blogList);
+        modelAndView.addObject("blogs", blogList);
         return modelAndView;
     }
 
     @PostMapping("/search-title")
-    public ModelAndView listBlogs(@RequestParam("title") Optional<String> title, Pageable pageable){
+    public ModelAndView listBlogs(@RequestParam("title") Optional<String> title, Pageable pageable) {
         Page<Blog> blogs;
-        if(title.isPresent()){
+        if (title.isPresent()) {
             blogs = blogService.findAllByTitleContaining(title.get(), pageable);
         } else {
             blogs = blogService.findAll(pageable);
@@ -71,21 +71,21 @@ public class BlogController {
     @GetMapping("/create-blog")
     public ModelAndView showCreateForm() {
         ModelAndView modelAndView = new ModelAndView("/blog/create");
-        modelAndView.addObject("blog",new Blog());
+        modelAndView.addObject("blog", new Blog());
         return modelAndView;
     }
 
     @PostMapping("/create-blog")
-    public ModelAndView saveBlog(@ModelAttribute("blog") Blog blog){
+    public ModelAndView saveBlog(@ModelAttribute("blog") Blog blog) {
         blogService.save(blog);
         ModelAndView modelAndView = new ModelAndView("/blog/create");
-        modelAndView.addObject("blog",new Blog());
-        modelAndView.addObject("message","New blog created successfully!");
+        modelAndView.addObject("blog", new Blog());
+        modelAndView.addObject("message", "New blog created successfully!");
         return modelAndView;
     }
 
     @GetMapping("/view-blog/{id}")
-    public ModelAndView showViewForm(@PathVariable Long id){
+    public ModelAndView showViewForm(@PathVariable Long id) {
         Optional<Blog> blog = blogService.findById(id);
         if (blog.isPresent()) {
             ModelAndView modelAndView = new ModelAndView("/blog/view");
@@ -138,4 +138,16 @@ public class BlogController {
         return "redirect:home";
     }
 
+    @PostMapping("/view-category")
+    public ModelAndView viewCategory(@RequestParam("category") Long id) {
+        Optional<Category> categoryOptional = categoryService.findById(id);
+        if (!categoryOptional.isPresent()) {
+            return new ModelAndView("/error.404");
+        }
+        Iterable<Blog> blogs = blogService.findAllByCategory(categoryOptional.get());
+        ModelAndView modelAndView = new ModelAndView("/category/view");
+        modelAndView.addObject("category", categoryOptional.get());
+        modelAndView.addObject("blogs", blogs);
+        return modelAndView;
+    }
 }
