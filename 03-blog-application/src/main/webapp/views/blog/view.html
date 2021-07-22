@@ -9,15 +9,27 @@
 <p>
     <a href="/home">Blog list</a>
 </p>
-<input th:type="hidden" name="id" th:text="${blog.getId()}">
+<input th:type="hidden" name="id" th:field="*{id}">
 <table>
     <tr>
         <td>Title:</td>
-        <td><textarea th:text="${blog.getTitle()}" cols="100" rows="2"/></td>
+        <td th:text="${blog.title}"></td>
     </tr>
     <tr>
         <td>Last name:</td>
-        <td><textarea th:text="${blog.getContent()}" cols="200" rows="5"/></td>
+        <td th:text="*{blog.content}"></td>
+    </tr>
+    <tr>
+        <td>Author:</td>
+        <td th:text="${blog.author}"></td>
+    </tr>
+    <tr>
+        <td>Date</td>
+        <td th:text="${blog.date}"></td>
+    </tr>
+    <tr>
+        <td>Category:</td>
+        <td th:text="${blog.category.name}"></td>
     </tr>
 </table>
 

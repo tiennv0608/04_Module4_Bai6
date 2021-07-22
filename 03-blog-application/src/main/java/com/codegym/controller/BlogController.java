@@ -1,9 +1,15 @@
 package com.codegym.controller;
 
 import com.codegym.model.Blog;
+import com.codegym.model.Category;
 import com.codegym.service.BlogService;
+import com.codegym.service.CategoryService;
 import com.sun.org.apache.xpath.internal.operations.Mod;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -12,6 +18,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.util.List;
+import java.util.Optional;
 
 @Controller
 public class BlogController {
@@ -19,9 +26,33 @@ public class BlogController {
     @Autowired
     private BlogService blogService;
 
+    @Autowired
+    private CategoryService categoryService;
+
+    @ModelAttribute("categories")
+    public Iterable<Category> categories(){
+        return categoryService.findAll();
+    }
+
+//    @GetMapping("/home")
+//    public ModelAndView showList(){
+//        Iterable<Blog> blogList = blogService.findAll();
+//        ModelAndView modelAndView = new ModelAndView("/blog/list");
+//        modelAndView.addObject("blogs",blogList);
+//        return modelAndView;
+//    }
+
     @GetMapping("/home")
-    public ModelAndView showList(){
-        List<Blog> blogList = blogService.findAll();
+    public ModelAndView showList(@PageableDefault(value = 5) Pageable pageable){
+        Page<Blog> blogList = blogService.findAll(pageable);
+        ModelAndView modelAndView = new ModelAndView("/blog/list");
+        modelAndView.addObject("blogs",blogList);
+        return modelAndView;
+    }
+
+    @GetMapping("/sort")
+    public ModelAndView sortByDate(@PageableDefault(size = 5, sort = "date", direction = Sort.Direction.ASC) Pageable pageable){
+        Page<Blog> blogList = blogService.findAllOrOrderByDate(pageable);
         ModelAndView modelAndView = new ModelAndView("/blog/list");
         modelAndView.addObject("blogs",blogList);
         return modelAndView;
@@ -45,10 +76,10 @@ public class BlogController {
 
     @GetMapping("/view-blog/{id}")
     public ModelAndView showViewForm(@PathVariable Long id){
-        Blog blog = blogService.findById(id);
-        if (blog != null) {
+        Optional<Blog> blog = blogService.findById(id);
+        if (blog.isPresent()) {
             ModelAndView modelAndView = new ModelAndView("/blog/view");
-            modelAndView.addObject("blog", blog);
+            modelAndView.addObject("blog", blog.get());
             return modelAndView;
         } else {
             ModelAndView modelAndView = new ModelAndView("/error.404");
@@ -58,10 +89,10 @@ public class BlogController {
 
     @GetMapping("/edit-blog/{id}")
     public ModelAndView showEditForm(@PathVariable Long id) {
-        Blog blog = blogService.findById(id);
-        if (blog != null) {
+        Optional<Blog> blog = blogService.findById(id);
+        if (blog.isPresent()) {
             ModelAndView modelAndView = new ModelAndView("/blog/edit");
-            modelAndView.addObject("blog", blog);
+            modelAndView.addObject("blog", blog.get());
             return modelAndView;
         } else {
             ModelAndView modelAndView = new ModelAndView("/error.404");
@@ -80,10 +111,10 @@ public class BlogController {
 
     @GetMapping("/delete-blog/{id}")
     public ModelAndView showDeleteForm(@PathVariable Long id) {
-        Blog blog = blogService.findById(id);
-        if (blog != null) {
-            ModelAndView modelAndView = new ModelAndView("/blog/remove");
-            modelAndView.addObject("blog", blog);
+        Optional<Blog> blog = blogService.findById(id);
+        if (blog.isPresent()) {
+            ModelAndView modelAndView = new ModelAndView("/blog/delete");
+            modelAndView.addObject("blog", blog.get());
             return modelAndView;
         } else {
             ModelAndView modelAndView = new ModelAndView("/error.404");
