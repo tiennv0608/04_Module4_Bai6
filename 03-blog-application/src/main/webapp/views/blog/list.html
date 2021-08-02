@@ -1,11 +1,27 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
     <title>Blog list</title>
 </head>
 <body>
 <a href="/create-blog">Create new blog</a>
+<h3>
+    Welcome !
+    <div sec:authorize="isAuthenticated()">
+        <span sec:authentication="principal.username"></span>
+    </div>
+</h3>
+<div sec:authorize="isAnonymous()">
+    <a th:href="@{/login}">Login</a>
+</div>
+<div sec:authorize="isAuthenticated()">
+    <div sec:authorize="hasRole('USER')">
+        <a th:href="@{/login}">My Profile</a>
+    </div>
+    <a th:href="@{/logout}">Logout</a>
+</div>
 <h1>List Blogs</h1>
 <form action="/search-title" method="post">
     Search title:
@@ -37,7 +53,7 @@
             <td th:text="${blog.getAuthor()}"></td>
             <td th:text="${blog.getDate()}"></td>
             <td th:text="(${blog.getCategory() != null} ? ${blog.getCategory().name} : '')"></td>
-            <td><a th:href="@{/view-blog/__${blog.getId()}__}"/>View</td>
+            <td><a th:href="@{/view/__${blog.getId()}__}"/>View</td>
             <td><a th:href="@{/edit-blog/__${blog.getId()}__}"/>Edit</td>
             <td><a th:href="@{/delete-blog/__${blog.getId()}__}"/>Delete</td>
         </tr>

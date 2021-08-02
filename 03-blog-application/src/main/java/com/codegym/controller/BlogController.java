@@ -31,16 +31,21 @@ public class BlogController {
         return categoryService.findAll();
     }
 
-//    @GetMapping("/home")
-//    public ModelAndView showList(){
-//        Iterable<Blog> blogList = blogService.findAll();
-//        ModelAndView modelAndView = new ModelAndView("/blog/list");
-//        modelAndView.addObject("blogs",blogList);
+    @GetMapping("/login")
+    public String login() {
+        return "/login";
+    }
+
+//    @GetMapping("/")
+//    public ModelAndView showList(@PageableDefault(value = 5) Pageable pageable) {
+//        Iterable<Blog> blogList = blogService.findAll(pageable);
+//        ModelAndView modelAndView = new ModelAndView("/index");
+//        modelAndView.addObject("blogs", blogList);
 //        return modelAndView;
 //    }
 
     @GetMapping("/home")
-    public ModelAndView showList(@PageableDefault(value = 5) Pageable pageable) {
+    public ModelAndView showHomePage(@PageableDefault(value = 5) Pageable pageable) {
         Page<Blog> blogList = blogService.findAll(pageable);
         ModelAndView modelAndView = new ModelAndView("/blog/list");
         modelAndView.addObject("blogs", blogList);
@@ -84,7 +89,7 @@ public class BlogController {
         return modelAndView;
     }
 
-    @GetMapping("/view-blog/{id}")
+    @GetMapping("/view/{id}")
     public ModelAndView showViewForm(@PathVariable Long id) {
         Optional<Blog> blog = blogService.findById(id);
         if (blog.isPresent()) {
